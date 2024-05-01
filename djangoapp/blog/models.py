@@ -5,11 +5,6 @@ from utils.images import resize_image
 from django_summernote.models import AbstractAttachment
 from django.urls import reverse
 
-
-
-
-# Create your models here.
-
 class PostAttachment(AbstractAttachment):
     def save(self, *args, **kwargs):
         if not self.name:
@@ -82,6 +77,11 @@ class Page(models.Model):
         ),
     )
     content = models.TextField()
+    
+    def get_absolute_url(self):
+        if not self.is_published:
+            return reverse('blog:index')
+        return reverse('blog:page', args=(self.slug,))
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -152,7 +152,7 @@ class Post(models.Model):
         if not self.is_published:
             return reverse('blog:index')
         return reverse('blog:post', args=(self.slug,))
-
+    
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_new(self.title, 4)
